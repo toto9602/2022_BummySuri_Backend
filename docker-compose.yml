@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  mysql:
+    container_name: mysql_nft
+    image: mysql:8.0
+    volumes:
+      - ./src/data/db:/var/lib/mysql
+    ports:
+      - '3306:3306'
+    env_file:
+      - .env
+    networks:
+      - nft-net
+
+  server:
+    container_name: nft_project_server
+    image: nft_project_server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./:/usr/src/app
+    restart: on-failure
+    env_file:
+      - .env
+    networks:
+      - nft-net
+
+    depends_on:
+      - mysql
+
+networks:
+  nft-net:
