@@ -3,8 +3,11 @@ import Caver from 'caver-js';
 
 import { CAVER } from './caver.provider';
 
+interface CaverService {
+  call(to: string, input: string, rpcUrl?: string): Promise<string>;
+}
 @Injectable()
-export class CaverService {
+export class CaverServiceImpl implements CaverService {
   constructor(
     @Inject(CAVER)
     private caver: Caver,
@@ -19,7 +22,7 @@ export class CaverService {
     });
   }
 
-  async sendRawTx(rawTx: string, rpcUrl: string) {
+  async sendRawTx(rawTx: string, rpcUrl?: string) {
     const caver = rpcUrl ? new Caver(rpcUrl) : this.caver;
 
     return caver.rpc.klay.sendRawTransaction(rawTx);

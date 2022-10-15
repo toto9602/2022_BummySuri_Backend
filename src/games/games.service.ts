@@ -1,11 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+
+import { UsersServiceImpl } from 'src/users/users.service';
+
 import { GameResults, GAME_CHOICES } from './consts';
 import { GameChoices } from './games.dtos';
 
+interface GamesService {
+  createGameResult(gameChoice: GameChoices): GameResults;
+}
+
 @Injectable()
-export class GamesService {
-  constructor(private usersService: UsersService) {}
+export class GamesServiceImpl implements GamesService {
+  constructor(private usersService: UsersServiceImpl) {}
 
   createGameResult(gameChoice: GameChoices): GameResults {
     const randomResult = this.generateRandomResult();
