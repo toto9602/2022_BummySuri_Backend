@@ -5,16 +5,24 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { User } from './user.entity';
 
+interface UsersService {
+  checkIfSucceeded(userAddr: string): Promise<boolean>;
+  markAsSucceeded(userAddr: string): Promise<void>;
+  getUserByAddr(userAddr: string): Promise<User>;
+  addPoints(userAddr: string, points: number): Promise<void>;
+}
+
 @Injectable()
-export class UsersService {
+export class UsersServiceImpl implements UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
   ) {}
 
-  async checkifSucceeded(userAddr: string): Promise<boolean> {
+  async checkIfSucceeded(userAddr: string): Promise<boolean> {
     try {
       const user = await this.usersRepository.findOneBy({ userAddr });
 
