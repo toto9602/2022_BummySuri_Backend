@@ -10,4 +10,7 @@ export class User {
 
   @Column({ default: false })
   isSuccess: boolean;
+
+  @Column({ default: 0 })
+  points: number;
 }

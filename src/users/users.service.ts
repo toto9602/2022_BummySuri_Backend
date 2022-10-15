@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -23,10 +27,31 @@ export class UsersService {
     }
   }
 
-  async checkSuccess(userAddr: string): Promise<void> {
+  async markAsSucceeded(userAddr: string): Promise<void> {
     try {
       const user = await this.usersRepository.findOneBy({ userAddr });
       user.isSuccess = true;
+
+      await this.usersRepository.save(user);
+    } catch (err: any) {
+      const msg = err.message || '';
+      throw new InternalServerErrorException(msg);
+    }
+  }
+
+  async getUserByAddr(userAddr: string): Promise<User> {
+    const user = await this.usersRepository.findOneBy({ userAddr });
+
+    if (!user)
+      throw new NotFoundException(`Can't find User with addr ${userAddr}`);
+
+    return user;
+  }
+
+  async addPoints(userAddr: string, points: number): Promise<void> {
+    try {
+      const user = await this.getUserByAddr(userAddr);
+      user.points = user.points + points;
 
       await this.usersRepository.save(user);
     } catch (err: any) {
