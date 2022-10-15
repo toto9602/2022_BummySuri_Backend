@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { GamesModule } from './games/games.module';
+import { CaverModule } from './common/caver/caver.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,6 +22,7 @@ import { GamesModule } from './games/games.module';
     }),
     UsersModule,
     GamesModule,
+    CaverModule,
   ],
   controllers: [AppController],
   providers: [AppService],
