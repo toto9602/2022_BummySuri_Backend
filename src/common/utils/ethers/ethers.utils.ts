@@ -9,8 +9,8 @@ class EthersUtil {
     return EthersUtil.iface.encodeFunctionData(fn, params);
   }
 
-  static decodeFunctionData(functionData: string) {
-    return EthersUtil.iface.parseTransaction({ data: functionData });
+  static decodeFunctionResult(fn: Contract.FunctionName, resultData: string) {
+    return EthersUtil.iface.decodeFunctionResult(fn, resultData);
   }
 }
 
