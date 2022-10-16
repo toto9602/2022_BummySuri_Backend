@@ -7,8 +7,8 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Post('/mint')
-  singleMint(req: MintReq): string {
+  async singleMint(req: MintReq): Promise<boolean> {
     const reqDto = Object.assign({}, req);
-    return this.appService.singleMint(req);
+    return this.appService.singleMint(reqDto);
   }
 }

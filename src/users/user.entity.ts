@@ -11,6 +11,18 @@ export class User {
   @Column({ default: false })
   isSuccess: boolean;
 
+  @Column()
+  name: string;
+
+  @Column()
+  univ: string;
+
+  @Column()
+  phoneNumber: string;
+
+  @Column()
+  major: string;
+
   @Column({ default: 0 })
   points: number;
 }
