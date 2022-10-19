@@ -1,4 +1,4 @@
-import { GameChoices } from './games.dtos';
+import { GameChoices } from './game.dtos';
 
 export const GAME_CHOICES: GameChoices[] = ['LEFT', 'RIGHT'];
 

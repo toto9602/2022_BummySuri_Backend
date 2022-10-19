@@ -1,12 +1,12 @@
 import { ConfigService } from '@nestjs/config';
-import Caver from 'caver-js';
+const Caver = require('caver-js');
 
 export const CAVER = 'CAVER';
 
 export const caverProvider = [
   {
     provide: CAVER,
-    useFactory: (config: ConfigService) => new Caver(config.get('chainUrl')),
+    useFactory: (config: ConfigService) => new Caver('http://test.api.com'),
     inject: [ConfigService],
   },
 ];

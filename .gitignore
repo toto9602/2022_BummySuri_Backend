@@ -36,3 +36,7 @@ lerna-debug.log*
 
 .env
 db/
+
+MyLittleTiger.json
+MyLittleEagle.json
+abi.ts
