@@ -1,10 +1,7 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { MintDto } from '../app.dtos';
 
 import { User } from './user.entity';
 
@@ -21,6 +18,19 @@ export class UsersServiceImpl implements UsersService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
   ) {}
+  async createUser(req: MintDto): Promise<User> {
+    const newUser = this.usersRepository.create({
+      userAddr: req.userAddr,
+      name: req.name,
+      major: req.major,
+      phoneNumber: req.phoneNumber,
+      univ: req.univ,
+    });
+
+    await this.usersRepository.save(newUser);
+
+    return newUser;
+  }
 
   async checkIfSucceeded(userAddr: string): Promise<boolean> {
     try {
@@ -49,9 +59,7 @@ export class UsersServiceImpl implements UsersService {
 
   async getUserByAddr(userAddr: string): Promise<User> {
     const user = await this.usersRepository.findOneBy({ userAddr });
-
-    if (!user)
-      throw new NotFoundException(`Can't find User with addr ${userAddr}`);
+    if (!user) return null;
 
     return user;
   }
