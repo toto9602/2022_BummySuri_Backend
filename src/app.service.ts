@@ -5,21 +5,23 @@ import {
 import { HttpException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  BaseRes,
-  GuessGameResultParams,
-  MintCountRes,
-  MintDto,
-} from './app.dtos';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
+import { BaseRes, GameGuessDto, MintCountRes, MintDto } from './app.dtos';
 import { ContractFactory, University } from './common/caver/caver.factory';
 import { UsersServiceImpl } from './users/users.service';
+import { GameServiceImpl } from './game/game.service';
+
+const LOOP_TIME = 3000;
 
 @Injectable()
 export class AppService {
   private contractFactory: ContractFactory;
   constructor(
     private usersService: UsersServiceImpl,
+    private gameService: GameServiceImpl,
     private config: ConfigService,
+    private http: HttpService,
   ) {
     this.contractFactory = new ContractFactory();
   }
@@ -90,6 +92,33 @@ export class AppService {
     } catch (err: any) {
       throw err;
     }
+  }
+  async guessGame(req: GameGuessDto): Promise<BaseRes> {
+    console.log(__dirname);
+    const savedGameGuess = await this.gameService.saveGameGuess(req);
+
+    if (savedGameGuess) return { resultCode: '0', message: 'success' };
+
+    throw new InternalServerErrorException('Saving game Guess Failed');
+  }
+
+  // TODO : loop 추가하기
+  async updateMetaData(): Promise<void> {
+    const beginNum: Number = 1;
+    let hex = beginNum.toString(16);
+    hex = '0x' + hex;
+    const result = await lastValueFrom(
+      this.http.put(
+        `https://th-api.klaytnapi.com/v2/contract/nft/${process.env.NFT_ADDRESS}/token/${hex}/metadata`,
+        '',
+        {
+          auth: { username: process.env.ID, password: process.env.PW },
+          headers: { 'x-chain-id': process.env.X_CHAIN_ID },
+        },
+      ),
+    );
+
+    console.log(result);
   }
 
   // async guessGameResult(req: GuessGameResultParams): Promise<BaseRes> {}

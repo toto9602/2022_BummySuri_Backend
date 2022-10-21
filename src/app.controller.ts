@@ -9,8 +9,8 @@ import {
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 import {
   BaseRes,
-  GuessGameResultParams,
-  GuessGameResultReq,
+  GameGuessDto,
+  GameGuessReq,
   MintCountRes,
   MintDto,
   MintReq,
@@ -45,8 +45,20 @@ export class AppController {
     return this.appService.getMintCount();
   }
 
-  // async guessGameResult(@Body() req: GuessGameResultReq): Promise<BaseRes> {
-  // const reqDto = Object.assign(new GuessGameResultParams(), req);
-  // return this.appService.guessGameResult(reqDto);
-  // }
+  @Post('/game')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '사용자의 게임 결과 예측 정보 저장' })
+  @ApiOkResponse({
+    description: '게임 결과 예측 정보를 저장 후 성공했음을 알리는 응답 반환',
+    type: BaseRes,
+  })
+  async guessGame(@Body() req: GameGuessReq): Promise<BaseRes> {
+    const reqDto = Object.assign(new GameGuessDto(), req);
+    return this.appService.guessGame(reqDto);
+  }
+
+  @Post('/update')
+  async updateMetaData() {
+    return this.appService.updateMetaData();
+  }
 }

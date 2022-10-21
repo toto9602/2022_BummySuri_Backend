@@ -1,6 +1,7 @@
 import { IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsAddress } from './dtos.validation';
+import { TreeLevelColumn } from 'typeorm';
 
 export class MintReq {
   @ApiProperty({
@@ -84,52 +85,79 @@ export class MintCountRes extends BaseRes {
   yonsei: number;
 }
 
-export class GameResult {
+export class GameGuess {
+  @ApiProperty({
+    type: String,
+    required: true,
+    description: '승리할 학교 예측',
+  })
   @IsString()
   univWin: string;
 
+  @ApiProperty({
+    type: String,
+    required: true,
+    description: '점수 차 예측',
+  })
   @IsString()
   scoreGap: string;
 }
 
-export class GuessGameResultReq {
+export class GameGuessReq {
+  @ApiProperty({
+    type: String,
+    required: true,
+    description: '사용자 주소',
+  })
   @IsAddress()
   userAddr: string;
 
+  @ApiProperty({
+    type: GameGuess,
+    required: true,
+    description: '농구 결과 예측',
+  })
   @ValidateNested()
-  gameOne: GameResult;
+  baseball: GameGuess;
 
+  @ApiProperty({
+    type: GameGuess,
+    required: true,
+    description: '빙구 결과 예측',
+  })
   @ValidateNested()
-  gameTwo: GameResult;
+  iceHockey: GameGuess;
 
+  @ApiProperty({
+    type: GameGuess,
+    required: true,
+    description: '농구 결과 예측',
+  })
   @ValidateNested()
-  gameThree: GameResult;
+  basketball: GameGuess;
 
+  @ApiProperty({
+    type:GameGuess,
+    required:true,
+    description:"럭비 결과 예측"
+  }) 
   @ValidateNested()
-  gameFour: GameResult;
+  rugby: GameGuess;
 
+  @ApiProperty({
+    type:GameGuess,
+    required:true,
+    description:"축구 결과 예측"
+  })
   @ValidateNested()
-  gameFive: GameResult;
+  soccer: GameGuess;
 }
 
-export class GuessGameResultParams {
+export class GameGuessDto {
   userAddr: string;
-  gameOne: GameResult;
-  gameTwo: GameResult;
-  gameThree: GameResult;
-  gameFour: GameResult;
-  gameFive: GameResult;
+  baseball: GameGuess;
+  iceHockey: GameGuess;
+  basketball: GameGuess;
+  rugby: GameGuess;
+  soccer: GameGuess;
 }
-
-// export interface GameResultList {
-//   gameOne: GameResult;
-//   gameTwo: GameResult;
-//   gameThree: GameResult;
-//   gameFour: GameResult;
-//   gameFive: GameResult;
-// }
-
-// export interface GuessGameResultParams {
-//   userAddr: string;
-//   gameResults: GameResultList;
-// }
