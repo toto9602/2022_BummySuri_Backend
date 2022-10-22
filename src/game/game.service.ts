@@ -3,11 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { GameGuess } from './game.entity';
-import { BaseRes, GameGuessDto } from '../app.dtos';
+import { GameGuessDto } from '../app.dtos';
 import { UsersServiceImpl } from '../users/users.service';
 
 interface GameService {
-  // saveGameGuess(req: GuessGameResultParams): Promise<BaseRes>;
+  saveGameGuess(req: GameGuessDto): Promise<GameGuess>;
 }
 
 @Injectable()
@@ -22,8 +22,7 @@ export class GameServiceImpl implements GameService {
     try {
       const user = await this.usersService.getUserByAddr(req.userAddr);
 
-      console.log('user', user);
-      const savedGameGuess = this.gameRepository.create({
+      const newGameGuess = this.gameRepository.create({
         baseballWin: req.baseball.univWin,
         baseballGap: req.baseball.scoreGap,
         iceHockeyWin: req.iceHockey.univWin,
@@ -34,16 +33,25 @@ export class GameServiceImpl implements GameService {
         rugbyGap: req.rugby.scoreGap,
         soccerWin: req.soccer.univWin,
         soccerGap: req.soccer.scoreGap,
+        user: user,
       });
 
-      console.log('savedGameGuess', savedGameGuess);
+      console.log('newGameGuess', newGameGuess);
 
-      await this.gameRepository.save(savedGameGuess);
-      return savedGameGuess;
+      await this.gameRepository.save(newGameGuess);
+      return newGameGuess;
     } catch (err: any) {
       const msg = err.message || '';
       throw new InternalServerErrorException(msg);
     }
+  }
+
+  private async findGameGuessByUserAddr(userAddr: string): Promise<GameGuess> {
+    const user = await this.usersService.getUserByAddr(userAddr);
+
+    const game = await this.gameRepository.findOneBy({ user: user });
+
+    return game;
   }
 }
 // createGameResult(gameChoice: GameChoices): GameResults {

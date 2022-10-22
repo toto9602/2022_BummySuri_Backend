@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -43,5 +44,6 @@ export class GameGuess {
   soccerGap: string;
 
   @OneToOne(() => User, (user) => user.gameGuess, { cascade: true })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }
