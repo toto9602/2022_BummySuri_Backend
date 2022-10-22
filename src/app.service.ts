@@ -121,7 +121,6 @@ export class AppService {
     console.log(result);
   }
 
-  // async guessGameResult(req: GuessGameResultParams): Promise<BaseRes> {}
   private getUnivType(univ: string): University {
     if (univ === 'Korea') return 'KOREA';
     if (univ === 'Yonsei') return 'YONSEI';
