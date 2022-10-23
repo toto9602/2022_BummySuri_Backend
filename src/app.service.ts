@@ -9,10 +9,18 @@ import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { TransactionReceipt } from 'caver-js';
 
-import { BaseRes, GameGuessDto, MintCountRes, MintDto } from './app.dtos';
+import {
+  BaseRes,
+  GameGuessDto,
+  GetBettingsCountRes,
+  MintCountRes,
+  MintDto,
+  saveBettedItemDto,
+} from './app.dtos';
 import { ContractFactory, University } from './common/caver/caver.factory';
 import { UsersServiceImpl } from './users/users.service';
 import { GameServiceImpl } from './game/game.service';
+import { ItemServiceImpl } from './item/item.service';
 
 const LOOP_TIME = 3000;
 
@@ -22,6 +30,7 @@ export class AppService {
   constructor(
     private usersService: UsersServiceImpl,
     private gameService: GameServiceImpl,
+    private itemService: ItemServiceImpl,
     private config: ConfigService,
     private http: HttpService,
   ) {
@@ -108,6 +117,22 @@ export class AppService {
     throw new InternalServerErrorException('Saving game Guess Failed');
   }
 
+  async saveBettedItemInfo(req: saveBettedItemDto): Promise<BaseRes> {
+    const savedBettedItem = await this.itemService.saveBettedItemInfo(req);
+
+    if (savedBettedItem) return { resultCode: '0', message: 'success' };
+
+    throw new InternalServerErrorException('Saving Betted Item Failed');
+  }
+
+  async getBettingsCount(): Promise<GetBettingsCountRes> {
+    const result = await await this.itemService.getBettingsCount();
+
+    if (result)
+      return { resultCode: '0', message: 'success', bettings: result };
+
+    throw new InternalServerErrorException('Fetching Bettings Count Failed');
+  }
   // TODO : loop 추가하기
   async updateMetaData(): Promise<void> {
     for (let i = 1; i <= LOOP_TIME; i++) {
