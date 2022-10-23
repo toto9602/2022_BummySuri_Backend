@@ -11,9 +11,12 @@ import {
   BaseRes,
   GameGuessDto,
   GameGuessReq,
+  GetBettingsCountRes,
   MintCountRes,
   MintDto,
   MintReq,
+  saveBettedItemDto,
+  saveBettedItemReq,
 } from './app.dtos';
 import { AppService } from './app.service';
 
@@ -45,7 +48,7 @@ export class AppController {
     return this.appService.getMintCounts();
   }
 
-  @Post('/game')
+  @Post('/guess')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '사용자의 게임 결과 예측 정보 저장' })
   @ApiOkResponse({
@@ -55,6 +58,30 @@ export class AppController {
   async guessGame(@Body() req: GameGuessReq): Promise<BaseRes> {
     const reqDto = Object.assign(new GameGuessDto(), req);
     return this.appService.guessGame(reqDto);
+  }
+
+  @Post('/bet')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '아이템 응모하기' })
+  @ApiOkResponse({
+    description:
+      '사용자의 응모 정보를 DB에 저장 후 성공했음을 알리는 응답 반환',
+    type: BaseRes,
+  })
+  async saveBettedItemInfo(@Body() req: saveBettedItemReq): Promise<BaseRes> {
+    const reqDto = Object.assign(new saveBettedItemDto(), req);
+    return this.appService.saveBettedItemInfo(reqDto);
+  }
+
+  @Get('/bettings')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '아이템별 응모 수량' })
+  @ApiOkResponse({
+    description: '아이템별로 응모한 사용자 수를 반환',
+    type: GetBettingsCountRes,
+  })
+  async getBettingsCount(): Promise<GetBettingsCountRes> {
+    return this.appService.getBettingsCount();
   }
 
   @Post('/update')

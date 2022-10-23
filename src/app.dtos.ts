@@ -128,7 +128,7 @@ export class GameGuess {
   @ApiProperty({
     type: String,
     required: true,
-    description: '점수 차 예측',
+    description: '점수 차 예측 ("0", "1", "2", "3")',
   })
   @IsString()
   scoreGap: string;
@@ -191,4 +191,73 @@ export class GameGuessDto {
   basketball: GameGuess;
   rugby: GameGuess;
   soccer: GameGuess;
+}
+
+export class saveBettedItemReq {
+  @ApiProperty({
+    type: String,
+    required: true,
+    description: '사용자의 주소',
+  })
+  @IsAddress()
+  userAddr: string;
+
+  @ApiProperty({
+    type: String,
+    required: true,
+    description: '아이템의 코드 ("1" || "2" || "3" || "4" || "5")',
+  })
+  @IsString()
+  itemCode: string;
+}
+
+export class saveBettedItemDto {
+  userAddr: string;
+  itemCode: string;
+}
+
+export class Bettings {
+  @ApiProperty({
+    type: Number,
+    required: true,
+    description: '1등 아이템 응모 수량',
+  })
+  '1': number;
+
+  @ApiProperty({
+    type: Number,
+    required: true,
+    description: '2등 아이템 응모 수량',
+  })
+  '2': number;
+
+  @ApiProperty({
+    type: Number,
+    required: true,
+    description: '3등 아이템 응모 수량',
+  })
+  '3': number;
+
+  @ApiProperty({
+    type: Number,
+    required: true,
+    description: '4등 아이템 응모 수량',
+  })
+  '4': number;
+
+  @ApiProperty({
+    type: Number,
+    required: true,
+    description: '5등 아이템 응모 수량',
+  })
+  '5': number;
+}
+export class GetBettingsCountRes extends BaseRes {
+  @ApiProperty({
+    type: Bettings,
+    required: true,
+    description: '아이템별 응모 수량',
+  })
+  @ValidateNested()
+  bettings: Bettings;
 }

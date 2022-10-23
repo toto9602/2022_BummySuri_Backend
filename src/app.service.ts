@@ -12,6 +12,8 @@ import { TransactionReceipt } from 'caver-js';
 import {
   BaseRes,
   GameGuessDto,
+  GetBettingsCountRes,
+  saveBettedItemDto,
   GetNextNFTMetaDataRes,
   KoreaMintCountRes,
   MintCountRes,
@@ -22,6 +24,7 @@ import {
 import { ContractFactory, University } from './common/caver/caver.factory';
 import { UsersServiceImpl } from './users/users.service';
 import { GameServiceImpl } from './game/game.service';
+import { ItemServiceImpl } from './item/item.service';
 
 const LOOP_TIME = 3000;
 
@@ -31,6 +34,7 @@ export class AppService {
   constructor(
     private usersService: UsersServiceImpl,
     private gameService: GameServiceImpl,
+    private itemService: ItemServiceImpl,
     private config: ConfigService,
     private http: HttpService,
   ) {
@@ -177,7 +181,6 @@ export class AppService {
         url = this.config.get('SURI_URL');
         nextNum = (await this.getYonseiMintCount()).yonseiMints.toString();
       }
-
       const requestUrl = url + nextNum + '.json';
       const metadata = (await lastValueFrom(this.http.get(requestUrl))).data;
 
@@ -194,21 +197,42 @@ export class AppService {
       throw new InternalServerErrorException(msg);
     }
   }
+
+  async saveBettedItemInfo(req: saveBettedItemDto): Promise<BaseRes> {
+    const savedBettedUser = await this.itemService.saveBettedItemInfo(req);
+
+    if (savedBettedUser) return { resultCode: '0', message: 'success' };
+
+    throw new InternalServerErrorException('Saving Betted Item Failed');
+  }
+
+  async getBettingsCount(): Promise<GetBettingsCountRes> {
+    const result = await this.itemService.getBettingsCount();
+
+    if (result)
+      return { resultCode: '0', message: 'success', bettings: result };
+
+    throw new InternalServerErrorException('Fetching Bettings Count Failed');
+  }
+
   // TODO : loop 추가하기
   async updateMetaData(): Promise<void> {
-    const beginNum: Number = 1;
-    let hex = beginNum.toString(16);
-    hex = '0x' + hex;
-    const result = await lastValueFrom(
-      this.http.put(
-        `https://th-api.klaytnapi.com/v2/contract/nft/${process.env.NFT_ADDRESS}/token/${hex}/metadata`,
-        '',
-        {
-          auth: { username: process.env.ID, password: process.env.PW },
-          headers: { 'x-chain-id': process.env.X_CHAIN_ID },
-        },
-      ),
-    );
+    for (let i = 1; i <= LOOP_TIME; i++) {
+      const beginNum: Number = 1;
+      const hex = '0x' + beginNum.toString(16);
+
+      const result = await lastValueFrom(
+        this.http.put(
+          `https://th-api.klaytnapi.com/v2/contract/nft/${process.env.NFT_ADDRESS}/token/${hex}/metadata`,
+          '',
+          {
+            auth: { username: process.env.ID, password: process.env.PW },
+            headers: { 'x-chain-id': process.env.X_CHAIN_ID },
+          },
+        ),
+      );
+      console.log(`${hex}`, result);
+    }
   }
 
   private getUnivType(univ: boolean): University {
