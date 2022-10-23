@@ -11,6 +11,7 @@ import { AppService } from './app.service';
 import { User } from './users/user.entity';
 import { GameGuess } from './game/game.entity';
 import { HttpModule } from '@nestjs/axios';
+import { ItemModule } from './item/item.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { HttpModule } from '@nestjs/axios';
     UsersModule,
     GameModule,
     CaverModule,
+    ItemModule,
     HttpModule.register({
       timeout: 5000,
     }),

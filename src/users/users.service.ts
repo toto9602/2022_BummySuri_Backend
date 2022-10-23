@@ -64,6 +64,11 @@ export class UsersServiceImpl implements UsersService {
     return user;
   }
 
+  async saveUser(user: User): Promise<User> {
+    const savedUser = this.usersRepository.save(user);
+
+    return savedUser;
+  }
   async addPoints(userAddr: string, points: number): Promise<void> {
     try {
       const user = await this.getUserByAddr(userAddr);

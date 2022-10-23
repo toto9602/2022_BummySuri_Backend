@@ -1,5 +1,12 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from '../users/user.entity';
+import { Betted } from '../user_item/betted.entity';
 
 @Entity()
 export class Item {
@@ -12,6 +19,6 @@ export class Item {
   @Column()
   pointsNeeded: number;
 
-  @OneToMany(() => User, (user) => user.bettedItem)
+  @OneToMany((type) => Betted, (betted) => betted.item)
   bettedUsers: User[];
 }

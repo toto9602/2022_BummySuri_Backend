@@ -9,11 +9,12 @@ import { Repository } from 'typeorm';
 import { BaseRes, Bettings, MintDto, saveBettedItemDto } from '../app.dtos';
 import { User } from '../users/user.entity';
 import { UsersServiceImpl } from '../users/users.service';
+import { Betted } from '../user_item/betted.entity';
 
 import { Item } from './item.entity';
 
 interface ItemService {
-  saveBettedItemInfo(req: saveBettedItemDto): Promise<User>;
+  saveBettedItemInfo(req: saveBettedItemDto): Promise<Betted>;
   getBettingsCount(): Promise<Bettings>;
 }
 
@@ -21,12 +22,13 @@ interface ItemService {
 export class ItemServiceImpl implements ItemService {
   constructor(
     @InjectRepository(Item)
-    private usersRepository: Repository<User>,
     private itemRepository: Repository<Item>,
     private usersService: UsersServiceImpl,
+    @InjectRepository(Betted)
+    private bettedRepository: Repository<Betted>,
   ) {}
 
-  async saveBettedItemInfo(req: saveBettedItemDto): Promise<User> {
+  async saveBettedItemInfo(req: saveBettedItemDto): Promise<Betted> {
     try {
       const user = await this.usersService.getUserByAddr(req.userAddr);
 
@@ -35,11 +37,16 @@ export class ItemServiceImpl implements ItemService {
       });
 
       if (bettedItem) {
-        user.bettedItem = bettedItem;
+        const bettingResult = this.bettedRepository.create({
+          user: user,
+          item: bettedItem,
+        });
+        user.points = user.points - bettedItem.pointsNeeded;
 
-        const bettedUser = await this.usersRepository.save(user);
+        const bettedUser = await this.usersService.saveUser(user);
 
-        return bettedUser;
+        const result = await this.bettedRepository.save(bettingResult);
+        return result;
       }
     } catch (err: any) {
       const msg = err.message || '';
@@ -48,32 +55,45 @@ export class ItemServiceImpl implements ItemService {
   }
 
   async getBettingsCount(): Promise<Bettings> {
-    const firstBettings = await this.itemRepository.findOneBy({
-      itemCode: '1',
+    const firstItem = await this.getItem('1');
+    const firstBetters = await this.bettedRepository.find({
+      where: { item: firstItem },
     });
 
-    const secondBettings = await this.itemRepository.findOneBy({
-      itemCode: '2',
+    const secondItem = await this.getItem('2');
+    const secondBetters = await this.bettedRepository.find({
+      where: { item: secondItem },
     });
 
-    const thirdBettings = await this.itemRepository.findOneBy({
-      itemCode: '3',
+    const thirdItem = await this.getItem('3');
+    const thirdBetters = await this.bettedRepository.find({
+      where: { item: thirdItem },
     });
 
-    const fourthBettings = await this.itemRepository.findOneBy({
-      itemCode: '4',
+    const fourthItem = await this.getItem('4');
+    const fourthBetters = await this.bettedRepository.find({
+      where: { item: fourthItem },
     });
 
-    const fifthBettings = await this.itemRepository.findOneBy({
-      itemCode: '5',
+    const fifthItem = await this.getItem('5');
+    const fifthBetters = await this.bettedRepository.find({
+      where: { item: fifthItem },
     });
 
     return {
-      '1': firstBettings.bettedUsers.length,
-      '2': secondBettings.bettedUsers.length,
-      '3': thirdBettings.bettedUsers.length,
-      '4': fourthBettings.bettedUsers.length,
-      '5': fifthBettings.bettedUsers.length,
+      '1': firstBetters ? firstBetters.length : 0,
+      '2': secondBetters ? secondBetters.length : 0,
+      '3': thirdBetters ? thirdBetters.length : 0,
+      '4': fourthBetters ? fourthBetters.length : 0,
+      '5': fifthBetters ? fifthBetters.length : 0,
     };
+  }
+
+  private async getItem(itemCode: string): Promise<Item> {
+    const item = this.itemRepository.findOneBy({
+      itemCode: itemCode,
+    });
+
+    return item;
   }
 }
