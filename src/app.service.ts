@@ -121,9 +121,9 @@ export class AppService {
     console.log(result);
   }
 
-  private getUnivType(univ: string): University {
-    if (univ === 'Korea') return 'KOREA';
-    if (univ === 'Yonsei') return 'YONSEI';
+  private getUnivType(univ: boolean): University {
+    if (univ === true) return 'KOREA';
+    if (univ === false) return 'YONSEI';
   }
 }
 // const caver = new Caver(
