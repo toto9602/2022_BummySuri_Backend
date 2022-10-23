@@ -88,7 +88,7 @@ export class GameGuess {
   @ApiProperty({
     type: String,
     required: true,
-    description: '승리할 학교 예측',
+    description: '승리할 학교 예측 ("Korea" || "Yonsei" || "None")',
   })
   @IsString()
   univWin: string;
