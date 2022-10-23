@@ -22,7 +22,7 @@ export class UsersServiceImpl implements UsersService {
     const newUser = this.usersRepository.create({
       userAddr: req.userAddr,
       name: req.name,
-      major: req.major,
+      studentNumber: req.studentNumber,
       phoneNumber: req.phoneNumber,
       univ: req.univ,
     });
