@@ -20,7 +20,7 @@ export class MintReq {
   name: string;
 
   @ApiProperty({
-    type: String,
+    type: Boolean,
     required: true,
     description: '사용자의 소속 대학 (true 혹은 false)',
   })
