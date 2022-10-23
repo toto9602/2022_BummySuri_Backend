@@ -126,7 +126,7 @@ export class AppService {
   }
 
   private getUnivType(univ: boolean): University {
-    if (univ === true) return 'KOREA';
-    if (univ === false) return 'YONSEI';
+    if (univ === false) return 'KOREA';
+    if (univ === true) return 'YONSEI';
   }
 }
