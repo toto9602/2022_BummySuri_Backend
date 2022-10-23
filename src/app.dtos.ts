@@ -1,7 +1,6 @@
 import { IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsAddress } from './dtos.validation';
-import { TreeLevelColumn } from 'typeorm';
 
 export class MintReq {
   @ApiProperty({
@@ -39,10 +38,10 @@ export class MintReq {
   @ApiProperty({
     type: String,
     required: true,
-    description: '사용자의 전공',
+    description: '사용자의 학번',
   })
   @IsString()
-  major: string;
+  studentNumber: string;
 }
 
 export class MintDto {
@@ -50,7 +49,7 @@ export class MintDto {
   name: string;
   univ: string;
   phoneNumber: string;
-  major: string;
+  studentNumber: string;
 }
 
 export class BaseRes {
@@ -137,17 +136,17 @@ export class GameGuessReq {
   basketball: GameGuess;
 
   @ApiProperty({
-    type:GameGuess,
-    required:true,
-    description:"럭비 결과 예측"
-  }) 
+    type: GameGuess,
+    required: true,
+    description: '럭비 결과 예측',
+  })
   @ValidateNested()
   rugby: GameGuess;
 
   @ApiProperty({
-    type:GameGuess,
-    required:true,
-    description:"축구 결과 예측"
+    type: GameGuess,
+    required: true,
+    description: '축구 결과 예측',
   })
   @ValidateNested()
   soccer: GameGuess;

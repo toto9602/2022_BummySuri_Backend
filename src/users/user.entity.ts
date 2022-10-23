@@ -28,7 +28,7 @@ export class User {
   phoneNumber: string;
 
   @Column()
-  major: string;
+  studentNumber: string;
 
   @Column({ default: 0 })
   points: number;

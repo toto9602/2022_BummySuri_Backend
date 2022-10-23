@@ -36,8 +36,6 @@ export class GameServiceImpl implements GameService {
         user: user,
       });
 
-      console.log('newGameGuess', newGameGuess);
-
       await this.gameRepository.save(newGameGuess);
       return newGameGuess;
     } catch (err: any) {
