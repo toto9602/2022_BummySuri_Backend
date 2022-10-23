@@ -20,6 +20,8 @@ import {
   MintDto,
   MintRes,
   YonseiMintCountRes,
+  GetMyPointsDto,
+  GetMyPointsRes,
 } from './app.dtos';
 import { ContractFactory, University } from './common/caver/caver.factory';
 import { UsersServiceImpl } from './users/users.service';
@@ -118,6 +120,15 @@ export class AppService {
     throw new InternalServerErrorException('Saving game Guess Failed');
   }
 
+  async getMyPoints(req: GetMyPointsDto): Promise<GetMyPointsRes> {
+    const user = await this.usersService.getUserByAddr(req.userAddr);
+
+    return {
+      resultCode: '0',
+      message: 'success',
+      points: user.points,
+    };
+  }
   private async getKoreaMintCount(): Promise<KoreaMintCountRes> {
     try {
       const koreaContract = this.contractFactory.get('KOREA');

@@ -12,6 +12,9 @@ import {
   GameGuessDto,
   GameGuessReq,
   GetBettingsCountRes,
+  GetMyPointsDto,
+  GetMyPointsReq,
+  GetMyPointsRes,
   MintCountRes,
   MintDto,
   MintReq,
@@ -82,6 +85,18 @@ export class AppController {
   })
   async getBettingsCount(): Promise<GetBettingsCountRes> {
     return this.appService.getBettingsCount();
+  }
+
+  @Post('/myPoints')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '사용자의 포인트' })
+  @ApiOkResponse({
+    description: '사용자가 현재 보유한 포인트를 반환',
+    type: GetMyPointsRes,
+  })
+  async getMyPoints(@Body() req: GetMyPointsReq): Promise<GetMyPointsRes> {
+    const reqDto = Object.assign(new GetMyPointsDto(), req);
+    return this.appService.getMyPoints(reqDto);
   }
 
   @Post('/update')

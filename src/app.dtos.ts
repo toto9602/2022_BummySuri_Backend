@@ -261,3 +261,16 @@ export class GetBettingsCountRes extends BaseRes {
   @ValidateNested()
   bettings: Bettings;
 }
+
+export class GetMyPointsReq {
+  @IsAddress()
+  userAddr: string;
+}
+
+export class GetMyPointsDto {
+  userAddr: string;
+}
+
+export class GetMyPointsRes extends BaseRes {
+  points: number;
+}
