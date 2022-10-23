@@ -24,7 +24,7 @@ export class User {
   name: string;
 
   @Column()
-  univ: string;
+  univ: boolean;
 
   @Column()
   phoneNumber: string;
