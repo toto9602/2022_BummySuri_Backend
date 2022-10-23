@@ -110,19 +110,22 @@ export class AppService {
 
   // TODO : loop 추가하기
   async updateMetaData(): Promise<void> {
-    const beginNum: Number = 1;
-    let hex = beginNum.toString(16);
-    hex = '0x' + hex;
-    const result = await lastValueFrom(
-      this.http.put(
-        `https://th-api.klaytnapi.com/v2/contract/nft/${process.env.NFT_ADDRESS}/token/${hex}/metadata`,
-        '',
-        {
-          auth: { username: process.env.ID, password: process.env.PW },
-          headers: { 'x-chain-id': process.env.X_CHAIN_ID },
-        },
-      ),
-    );
+    for (let i = 1; i <= LOOP_TIME; i++) {
+      const beginNum: Number = 1;
+      const hex = '0x' + beginNum.toString(16);
+
+      const result = await lastValueFrom(
+        this.http.put(
+          `https://th-api.klaytnapi.com/v2/contract/nft/${process.env.NFT_ADDRESS}/token/${hex}/metadata`,
+          '',
+          {
+            auth: { username: process.env.ID, password: process.env.PW },
+            headers: { 'x-chain-id': process.env.X_CHAIN_ID },
+          },
+        ),
+      );
+      console.log(`${hex}`, result);
+    }
   }
 
   private getUnivType(univ: string): University {
