@@ -38,10 +38,10 @@ export class MintReq {
   @ApiProperty({
     type: String,
     required: true,
-    description: '사용자의 전공',
+    description: '사용자의 학번',
   })
   @IsString()
-  major: string;
+  studentNumber: string;
 }
 
 export class MintDto {
@@ -49,7 +49,7 @@ export class MintDto {
   name: string;
   univ: boolean;
   phoneNumber: string;
-  major: string;
+  studentNumber: string;
 }
 
 export class BaseRes {
@@ -88,7 +88,7 @@ export class GameGuess {
   @ApiProperty({
     type: String,
     required: true,
-    description: '승리할 학교 예측',
+    description: '승리할 학교 예측 ("Korea" || "Yonsei" || "None")',
   })
   @IsString()
   univWin: string;

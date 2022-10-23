@@ -7,6 +7,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
+import { TransactionReceipt } from 'caver-js';
+
 import { BaseRes, GameGuessDto, MintCountRes, MintDto } from './app.dtos';
 import { ContractFactory, University } from './common/caver/caver.factory';
 import { UsersServiceImpl } from './users/users.service';
@@ -44,7 +46,6 @@ export class AppService {
       // DB에 존재하지 않는 user이면 DB에 저장
       if (user == null) {
         user = await this.usersService.createUser(req);
-        console.log('user created');
       }
 
       const univType = this.getUnivType(req.univ);
@@ -54,10 +55,16 @@ export class AppService {
         gas: 250000,
       });
 
-      return {
-        resultCode: '0',
-        message: 'success',
-      };
+      if (receipt.status === true) {
+        await this.usersService.markAsSucceeded(user.userAddr);
+
+        return {
+          resultCode: '0',
+          message: 'success',
+        };
+      }
+
+      throw new InternalServerErrorException('Minting Failed');
     } catch (err: any) {
       if (err instanceof HttpException) throw err;
       const msg = err.message || '';
@@ -94,7 +101,6 @@ export class AppService {
     }
   }
   async guessGame(req: GameGuessDto): Promise<BaseRes> {
-    console.log(__dirname);
     const savedGameGuess = await this.gameService.saveGameGuess(req);
 
     if (savedGameGuess) return { resultCode: '0', message: 'success' };
@@ -117,8 +123,6 @@ export class AppService {
         },
       ),
     );
-
-    console.log(result);
   }
 
   private getUnivType(univ: boolean): University {
@@ -126,96 +130,3 @@ export class AppService {
     if (univ === false) return 'YONSEI';
   }
 }
-// const caver = new Caver(
-//   this.config.get('PRIVATE_PROVIDER_URL').toString(),
-// );
-// const keyring = caver.wallet.keyring.createFromPrivateKey(
-//   this.config.get('DEPLOYER_PRIVATE_KEY'),
-// );
-// caver.wallet.add(keyring);
-// const contract = caver.contract.create(
-//   abi,
-//   this.config.get('KU_BAOBAB_ADDR'),
-// );
-
-// await contract
-//   .sign(
-//     { from: this.config.get('DEPLOYER_ACCOUNT'), gas: 300000 },
-//     'singleMint',
-//     req.userAddr,
-//   )
-//   .then(console.log);
-// console.log('signed');
-
-// await contract.methods
-//   .adminMint(this.config.get('DEPLOYER_ACCOUNT'), 1)
-//   .send({
-//     from: this.config.get('DEPLOYER_ACCOUNT'),
-//     gas: 250000,
-//   })
-//   .then(function (receipt) {
-//     console.log('receipt', receipt);
-//   });
-// let user = await this.usersService.getUserByAddr(req.userAddr);
-// // 이미 DB에 저장된 user이면 isSuccess 확인
-// if (user) {
-//   const alreadySucceeded = await this.usersService.checkIfSucceeded(
-//     user.userAddr,
-//   );
-
-//   if (alreadySucceeded)
-//     throw new BadRequestException(
-//       `User with addr ${user.userAddr} already Succeeded`,
-//     );
-// }
-
-// // DB에 존재하지 않는 user이면 DB에 저장
-// if (user == null) {
-//   user = await this.usersService.createUser(req);
-//   console.log('user created');
-// }
-
-// // call singleMint
-
-// const fn: Contract.FunctionName = 'singleMint';
-// const { userAddr } = req;
-// const caver = new Caver(
-// this.config.get('PRIVATE_PROVIDER_URL').toString(),
-// );
-
-// const input = EthersUtil.encodeFunctionData(fn, [userAddr]);
-// console.log('input', input);
-// const input = caver.abi.encodeFunctionSignature({
-//   name: 'singleMint',
-//   type: 'function',
-//   inputs: [
-//     {
-//       type: 'address',
-//       name: 'receiver',
-//     },
-//   ],
-// });
-// console.log('input', input);
-// console.log(this.config.get('PRIVATE_PROVIDER_URL'));
-// console.log('PRIVATE PROVIDER', this.config.get('PRIVATE_PROVIDER_URL'));
-// const tx = caver.transaction.legacyTransaction.create({
-//   to: this.config.get('KU_BA0BAB_ADDR'),
-//   input: input,
-//   gas: 200000,
-// });
-// console.log('tx', tx);
-// console.log('KU_BAOBAB', this.config.get('KU_BAOBAB_ADDR'));
-
-// await caver.wallet.sign(keyring.address, input);
-
-// const rlpEncoded = tx.getRLPEncoding();
-// console.log('rplEncoded', rlpEncoded);
-// const receipt = await caver.rpc.klay.sendRawTransaction(input);
-// console.log(receipt);
-// // const resultData = await this.caverService.call(
-// //   this.config.get('ADDR'),
-// //   input,
-// // );
-// // const result = EthersUtil.decodeFunctionResult(fn, resultData);
-
-// return true;
