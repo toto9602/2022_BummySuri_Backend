@@ -68,6 +68,11 @@ export class BaseRes {
   message: string;
 }
 
+export class MintRes extends BaseRes {
+  character: string;
+  metadata: MetaData;
+  username: string;
+}
 export class MintCountRes extends BaseRes {
   @ApiProperty({
     type: Number,
@@ -82,6 +87,33 @@ export class MintCountRes extends BaseRes {
     description: '연세대 민팅 수량',
   })
   yonsei: number;
+}
+
+export class KoreaMintCountRes extends BaseRes {
+  koreaMints: number;
+}
+
+export class YonseiMintCountRes extends BaseRes {
+  yonseiMints: number;
+}
+
+export interface Attribute {
+  trait_type: string;
+  value: string;
+}
+
+export interface MetaData {
+  name: string;
+  description: string;
+  image: string;
+  background_color: string;
+  sendable: boolean;
+  send_friendly_only: boolean;
+  attributes: Attribute[];
+}
+export class GetNextNFTMetaDataRes extends BaseRes {
+  character: string;
+  metadata: MetaData;
 }
 
 export class GameGuess {

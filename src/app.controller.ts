@@ -41,8 +41,8 @@ export class AppController {
     description: '컨트랙에서 고대와 연대 민팅 수량 조회하여 반환',
     type: MintCountRes,
   })
-  async getMintCount(): Promise<MintCountRes> {
-    return this.appService.getMintCount();
+  async getMintCounts(): Promise<MintCountRes> {
+    return this.appService.getMintCounts();
   }
 
   @Post('/game')
