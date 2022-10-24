@@ -18,7 +18,7 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   userAddr: string;
 
   @Column({ default: false })
@@ -33,7 +33,7 @@ export class User {
   @Column()
   phoneNumber: string;
 
-  @Column()
+  @Column({ unique: true })
   studentNumber: string;
 
   @Column({ default: 500 }) // 기본 점수 500
