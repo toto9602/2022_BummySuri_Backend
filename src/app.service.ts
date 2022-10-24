@@ -2,12 +2,11 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { HttpException } from '@nestjs/common';
+import { HttpException, Logger } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
-import { TransactionReceipt } from 'caver-js';
 
 import {
   BaseRes,
@@ -36,6 +35,8 @@ const LOOP_TIME = 3000;
 @Injectable()
 export class AppService {
   private contractFactory: ContractFactory;
+  private readonly logger = new Logger();
+
   constructor(
     private usersService: UsersServiceImpl,
     private gameService: GameServiceImpl,
@@ -55,15 +56,18 @@ export class AppService {
           user.userAddr,
         );
 
-        if (alreadySucceeded)
+        if (alreadySucceeded) {
+          this.logger.warn(`User with addr ${user.userAddr} already Succeeded`);
           throw new BadRequestException(
             `User with addr ${user.userAddr} already Succeeded`,
           );
+        }
       }
 
       // DB에 존재하지 않는 user이면 DB에 저장
       if (user == null) {
         user = await this.usersService.createUser(req);
+        this.logger.log('User Created');
       }
 
       const univType = this.getUnivType(req.univ);
@@ -72,15 +76,16 @@ export class AppService {
         from: this.config.get('DEPLOYER_ACCOUNT'),
         gas: 250000,
       });
-      console.log(receipt.status);
       if (receipt.status === true) {
-        await this.usersService.markAsSucceeded(user.userAddr);
+        this.logger.log('Mint Success!!');
+        // await this.usersService.markAsSucceeded(user.userAddr);
         const nftData = await this.getNextNFTMetaData(univType);
 
+        user.isSuccess = true;
         user.myMetadataNum = nftData.metadataNum;
 
         const userSaved = await this.usersService.saveUser(user);
-
+        this.logger.log(`User with addr ${user.userAddr} set To True`);
         if (nftData.resultCode == '0' && userSaved) {
           return {
             resultCode: '0',
@@ -94,6 +99,7 @@ export class AppService {
 
       throw new InternalServerErrorException('Minting Failed');
     } catch (err: any) {
+      this.logger.error(err.message);
       if (err instanceof HttpException) throw err;
       const msg = err.message || '';
       throw new InternalServerErrorException(err.message);
@@ -106,6 +112,7 @@ export class AppService {
       const yonseiResult = await this.getYonseiMintCount();
 
       if (koreaResult.resultCode == '0' && yonseiResult.resultCode == '0') {
+        this.logger.log('Mint Counts Returned');
         return {
           resultCode: '0',
           message: 'success',
@@ -114,6 +121,7 @@ export class AppService {
         };
       }
 
+      this.logger.error('Fetching mint counts failed');
       throw new InternalServerErrorException('Fetching mint counts failed');
     } catch (err: any) {
       throw err;
@@ -123,14 +131,18 @@ export class AppService {
   async guessGame(req: GameGuessDto): Promise<BaseRes> {
     const savedGameGuess = await this.gameService.saveGameGuess(req);
 
-    if (savedGameGuess) return { resultCode: '0', message: 'success' };
-
+    if (savedGameGuess) {
+      this.logger.log(`User ${req.userAddr} guess saved`);
+      return { resultCode: '0', message: 'success' };
+    }
+    this.logger.error('Saving game guess Failed');
     throw new InternalServerErrorException('Saving game Guess Failed');
   }
 
   async getMyPoints(req: GetMyPointsDto): Promise<GetMyPointsRes> {
     const user = await this.usersService.getUserByAddr(req.userAddr);
 
+    this.logger.log(`User ${req.userAddr} points Fetched`);
     return {
       resultCode: '0',
       message: 'success',
@@ -143,13 +155,9 @@ export class AppService {
     let metadata: MetaData;
     const univType = this.getUnivType(user.univ);
 
-    if (univType === 'KOREA') {
-      metadata = await this.getMeta(univType, user.myMetadataNum);
-    }
-    if (user.univ == true) {
-      metadata = await this.getMeta(univType, user.myMetadataNum);
-    }
+    metadata = await this.getMeta(univType, user.myMetadataNum);
 
+    this.logger.log(`User ${req.userAddr} metadata fetched`);
     return {
       message: 'success',
       resultCode: '0',
@@ -164,7 +172,7 @@ export class AppService {
         { from: this.config.get('DEPLOYER_ACCOUNT') },
         'totalSupply',
       );
-
+      this.logger.log(`Korea MintCount Fetched : ${koreaResult}`);
       if (koreaResult)
         return {
           resultCode: '0',
@@ -172,7 +180,9 @@ export class AppService {
           koreaMints: koreaResult,
         };
 
-      throw new InternalServerErrorException('Fetching mint counts failed');
+      throw new InternalServerErrorException(
+        'Fetching Korea mint counts failed',
+      );
     } catch (err: any) {
       throw err;
     }
@@ -186,6 +196,7 @@ export class AppService {
         { from: this.config.get('DEPLOYER_ACCOUNT') },
         'totalSupply',
       );
+      this.logger.log(`Yonsei MintCount Fetched :${yonseiResult}`);
 
       if (yonseiResult)
         return {
@@ -194,6 +205,7 @@ export class AppService {
           yonseiMints: yonseiResult,
         };
 
+      this.logger.error('Fetching Yonsei mint counts failed');
       throw new InternalServerErrorException('Fetching mint counts failed');
     } catch (err: any) {
       throw err;
@@ -204,7 +216,6 @@ export class AppService {
     univ: University,
   ): Promise<GetNextNFTMetaDataRes> {
     try {
-      console.log('entered');
       let url: string;
       let nextNum: string;
       let character: string;
@@ -221,7 +232,6 @@ export class AppService {
         nextNum = (await this.getYonseiMintCount()).yonseiMints.toString();
       }
       const requestUrl = url + nextNum + '.json';
-      console.log(requestUrl);
       const metadata = (await lastValueFrom(this.http.get(requestUrl))).data;
       if (metadata) {
         return {
@@ -233,6 +243,7 @@ export class AppService {
         };
       }
     } catch (err: any) {
+      this.logger.error('getting next metadata failed', err.message);
       const msg = err.message || '';
       throw new InternalServerErrorException(msg);
     }
@@ -242,34 +253,45 @@ export class AppService {
     univ: University,
     myMetadataNum: string,
   ): Promise<MetaData> {
-    let url: string;
+    try {
+      let url: string;
 
-    if (univ == 'KOREA') {
-      url = this.config.get('BUMMY_URL') + myMetadataNum + '.json';
+      if (univ == 'KOREA') {
+        url = this.config.get('BUMMY_URL') + myMetadataNum + '.json';
+      }
+      if (univ == 'YONSEI') {
+        url = this.config.get('SURI_URL') + myMetadataNum + '.json';
+      }
+
+      const metadata = (await lastValueFrom(this.http.get(url))).data;
+
+      return metadata;
+    } catch (err: any) {
+      this.logger.error(err.message);
+      throw new InternalServerErrorException(err.message);
     }
-    if (univ == 'YONSEI') {
-      url = this.config.get('SURI_URL') + myMetadataNum + '.json';
-    }
-
-    const metadata = (await lastValueFrom(this.http.get(url))).data;
-
-    return metadata;
   }
 
   async saveBettedItemInfo(req: saveBettedItemDto): Promise<BaseRes> {
     const savedBettedUser = await this.itemService.saveBettedItemInfo(req);
 
-    if (savedBettedUser) return { resultCode: '0', message: 'success' };
+    if (savedBettedUser) {
+      this.logger.log('User betted to Item');
+      return { resultCode: '0', message: 'success' };
+    }
 
+    this.logger.error('Saving betted item failed');
     throw new InternalServerErrorException('Saving Betted Item Failed');
   }
 
   async getBettingsCount(): Promise<GetBettingsCountRes> {
     const result = await this.itemService.getBettingsCount();
 
-    if (result)
+    if (result) {
+      this.logger.log('Bettings Count Fetched');
       return { resultCode: '0', message: 'success', bettings: result };
-
+    }
+    this.logger.error('Fetching Bettings count failed');
     throw new InternalServerErrorException('Fetching Bettings Count Failed');
   }
 
