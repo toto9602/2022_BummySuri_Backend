@@ -355,6 +355,12 @@ export class GetMyMetadataRes extends BaseRes {
     type: MetaData,
   })
   metadata: MetaData;
+
+  @ApiProperty({
+    type: String,
+    required: true,
+  })
+  userAddr: string;
 }
 
 export class CalculatePointsReq {

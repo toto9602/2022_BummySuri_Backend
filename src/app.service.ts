@@ -162,6 +162,7 @@ export class AppService {
     return {
       message: 'success',
       resultCode: '0',
+      userAddr: req.userAddr,
       metadata: metadata,
     };
   }
