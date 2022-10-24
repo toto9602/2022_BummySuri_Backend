@@ -177,7 +177,7 @@ export class GameGuess {
   @ApiProperty({
     type: String,
     required: true,
-    description: '승리할 학교 예측 ("Korea" || "Yonsei" || "None")',
+    description: '승리할 학교 예측 ("KOREA" || "YONSEI" || "TIE")',
   })
   @IsString()
   univWin: string;
@@ -355,4 +355,18 @@ export class GetMyMetadataRes extends BaseRes {
     type: MetaData,
   })
   metadata: MetaData;
+
+  @ApiProperty({
+    type: String,
+    required: true,
+  })
+  userAddr: string;
+}
+
+export class CalculatePointsReq {
+  @ApiProperty({
+    type: String,
+    description: "Day 1 || Day 2 ('1' 또는 '2')",
+  })
+  day: string;
 }

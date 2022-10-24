@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 import { GameGuess } from './game.entity';
 import { GameGuessDto } from '../app.dtos';
 import { UsersServiceImpl } from '../users/users.service';
+import { User } from '../users/user.entity';
+import { FinalResult } from './consts';
 
 interface GameService {
   saveGameGuess(req: GameGuessDto): Promise<GameGuess>;
@@ -42,6 +44,90 @@ export class GameServiceImpl implements GameService {
       const msg = err.message || '';
       throw new InternalServerErrorException(msg);
     }
+  }
+
+  async calcPoints(user: User, day: string): Promise<number> {
+    let points: number = user.points;
+
+    // const gameGuess = await this.gameRepository.findOneBy({ user: user });
+
+    // if (day == '1') {
+    //   // 야구
+    //   if (FinalResult.BASEBALL_WIN == 'TIE') {
+    //     if (gameGuess.baseballWin == 'TIE') {
+    //       points = points + 1500;
+    //     }
+    //   } else {
+    //     if (gameGuess.baseballWin == FinalResult.BASEBALL_WIN) {
+    //       points = points + 1000;
+
+    //       if (gameGuess.baseballGap == FinalResult.BASEBALL_GAP) {
+    //         points = points + 1000;
+    //       }
+    //     }
+    //   }
+    //   // 빙구
+    //   if (FinalResult.ICEHOCKEY_WIN == 'TIE') {
+    //     if (gameGuess.iceHockeyWin == 'TIE') {
+    //       points = points + 1500;
+    //     }
+    //   } else {
+    //     if (gameGuess.iceHockeyWin == FinalResult.ICEHOCKEY_WIN) {
+    //       points = points + 1000;
+
+    //       if (gameGuess.iceHockeyGap == FinalResult.ICEHOCKEY_GAP) {
+    //         points = points + 1000;
+    //       }
+    //     }
+    //   }
+    //   // 농구
+    //   if (FinalResult.BASKETBALL_WIN == 'TIE') {
+    //     if (gameGuess.basketballWin == 'TIE') {
+    //       points = points + 1500;
+    //     }
+    //   } else {
+    //     if (gameGuess.basketballWin == FinalResult.BASKETBALL_WIN) {
+    //       points = points + 1000;
+
+    //       if (gameGuess.basketballGap == FinalResult.BASKETBALL_GAP) {
+    //         points = points + 1000;
+    //       }
+    //     }
+    //   }
+    // }
+
+    // if (day == '2') {
+    //   //럭비
+    //   if (FinalResult.RUGBY_WIN == 'TIE') {
+    //     if (gameGuess.rugbyWin == 'TIE') {
+    //       points = points + 1500;
+    //     }
+    //   } else {
+    //     if (gameGuess.rugbyWin == FinalResult.RUGBY_WIN) {
+    //       points = points + 1000;
+
+    //       if (gameGuess.rugbyGap == FinalResult.RUGBY_GAP) {
+    //         points = points + 1000;
+    //       }
+    //     }
+    //   }
+    //   //축구
+    //   if (FinalResult.SOCCER_WIN == 'TIE') {
+    //     if (gameGuess.soccerWin == 'TIE') {
+    //       points = points + 1500;
+    //     }
+    //   } else {
+    //     if (gameGuess.soccerWin == FinalResult.SOCCER_WIN) {
+    //       points = points + 1000;
+
+    //       if (gameGuess.soccerGap == FinalResult.SOCCER_GAP) {
+    //         points = points + 1000;
+    //       }
+    //     }
+    //   }
+    // }
+
+    return points;
   }
 
   private async findGameGuessByUserAddr(userAddr: string): Promise<GameGuess> {

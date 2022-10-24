@@ -24,6 +24,7 @@ import {
   GetMyMetadataDto,
   GetMyMetadataRes,
   MetaData,
+  CalculatePointsReq,
 } from './app.dtos';
 import { ContractFactory, University } from './common/caver/caver.factory';
 import { UsersServiceImpl } from './users/users.service';
@@ -161,6 +162,7 @@ export class AppService {
     return {
       message: 'success',
       resultCode: '0',
+      userAddr: req.userAddr,
       metadata: metadata,
     };
   }
@@ -295,28 +297,47 @@ export class AppService {
     throw new InternalServerErrorException('Fetching Bettings Count Failed');
   }
 
-  // TODO : loop 추가하기
-  async updateMetaData(): Promise<void> {
-    for (let i = 1; i <= LOOP_TIME; i++) {
-      const beginNum: Number = 1;
-      const hex = '0x' + beginNum.toString(16);
-
-      const result = await lastValueFrom(
-        this.http.put(
-          `https://th-api.klaytnapi.com/v2/contract/nft/${process.env.NFT_ADDRESS}/token/${hex}/metadata`,
-          '',
-          {
-            auth: { username: process.env.ID, password: process.env.PW },
-            headers: { 'x-chain-id': process.env.X_CHAIN_ID },
-          },
-        ),
-      );
-      console.log(`${hex}`, result);
-    }
-  }
-
   private getUnivType(univ: boolean): University {
     if (univ === false) return 'KOREA';
     if (univ === true) return 'YONSEI';
   }
+
+  async calculatePoints(req: CalculatePointsReq): Promise<BaseRes> {
+    const allUsers = await this.usersService.findAll();
+
+    const users = allUsers.map(async (user) => {
+      const pointsToBeSet = await this.gameService.calcPoints(user, req.day);
+
+      user.points = pointsToBeSet;
+
+      const userWithPointsSaved = await this.usersService.saveUser(user);
+      return userWithPointsSaved;
+    });
+
+    const usersSet = await Promise.all(users);
+    if (usersSet)
+      return {
+        message: 'success',
+        resultCode: '0',
+      };
+  }
+  // // TODO : loop 추가하기
+  // async updateMetaData(): Promise<void> {
+  //   for (let i = 1; i <= LOOP_TIME; i++) {
+  //     const beginNum: Number = 1;
+  //     const hex = '0x' + beginNum.toString(16);
+
+  //     const result = await lastValueFrom(
+  //       this.http.put(
+  //         `https://th-api.klaytnapi.com/v2/contract/nft/${process.env.NFT_ADDRESS}/token/${hex}/metadata`,
+  //         '',
+  //         {
+  //           auth: { username: process.env.ID, password: process.env.PW },
+  //           headers: { 'x-chain-id': process.env.X_CHAIN_ID },
+  //         },
+  //       ),
+  //     );
+  //     console.log(`${hex}`, result);
+  //   }
+  // }
 }

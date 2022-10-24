@@ -69,6 +69,12 @@ export class UsersServiceImpl implements UsersService {
 
     return savedUser;
   }
+
+  async findAll(): Promise<User[]> {
+    const users = this.usersRepository.find();
+
+    return users;
+  }
   async addPoints(userAddr: string, points: number): Promise<void> {
     try {
       const user = await this.getUserByAddr(userAddr);
