@@ -347,6 +347,12 @@ export class GetMyMetadataReq {
   userAddr: string;
 }
 
+export class GetMyMetadataDto {
+  userAddr: string;
+}
 export class GetMyMetadataRes extends BaseRes {
+  @ApiProperty({
+    type: MetaData,
+  })
   metadata: MetaData;
 }

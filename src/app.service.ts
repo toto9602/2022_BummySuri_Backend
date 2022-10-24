@@ -22,6 +22,9 @@ import {
   YonseiMintCountRes,
   GetMyPointsDto,
   GetMyPointsRes,
+  GetMyMetadataDto,
+  GetMyMetadataRes,
+  MetaData,
 } from './app.dtos';
 import { ContractFactory, University } from './common/caver/caver.factory';
 import { UsersServiceImpl } from './users/users.service';
@@ -116,6 +119,7 @@ export class AppService {
       throw err;
     }
   }
+
   async guessGame(req: GameGuessDto): Promise<BaseRes> {
     const savedGameGuess = await this.gameService.saveGameGuess(req);
 
@@ -131,6 +135,25 @@ export class AppService {
       resultCode: '0',
       message: 'success',
       points: user.points,
+    };
+  }
+
+  async getMyMetadata(req: GetMyMetadataDto): Promise<GetMyMetadataRes> {
+    const user = await this.usersService.getUserByAddr(req.userAddr);
+    let metadata: MetaData;
+    const univType = this.getUnivType(user.univ);
+
+    if (univType === 'KOREA') {
+      metadata = await this.getMeta(univType, user.myMetadataNum);
+    }
+    if (user.univ == true) {
+      metadata = await this.getMeta(univType, user.myMetadataNum);
+    }
+
+    return {
+      message: 'success',
+      resultCode: '0',
+      metadata: metadata,
     };
   }
   private async getKoreaMintCount(): Promise<KoreaMintCountRes> {
@@ -213,6 +236,24 @@ export class AppService {
       const msg = err.message || '';
       throw new InternalServerErrorException(msg);
     }
+  }
+
+  private async getMeta(
+    univ: University,
+    myMetadataNum: string,
+  ): Promise<MetaData> {
+    let url: string;
+
+    if (univ == 'KOREA') {
+      url = this.config.get('BUMMY_URL') + myMetadataNum + '.json';
+    }
+    if (univ == 'YONSEI') {
+      url = this.config.get('SURI_URL') + myMetadataNum + '.json';
+    }
+
+    const metadata = (await lastValueFrom(this.http.get(url))).data;
+
+    return metadata;
   }
 
   async saveBettedItemInfo(req: saveBettedItemDto): Promise<BaseRes> {
