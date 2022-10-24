@@ -9,6 +9,7 @@ import {
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 import {
   BaseRes,
+  CalculatePointsReq,
   GameGuessDto,
   GameGuessReq,
   GetBettingsCountRes,
@@ -117,8 +118,17 @@ export class AppController {
     return this.appService.getMyMetadata(reqDto);
   }
 
-  @Post('/update')
-  async updateMetaData() {
-    return this.appService.updateMetaData();
+  @Post('scores/calc')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '경기 예측 결과에 따라 사용자들의 점수를 업데이트' })
+  @ApiOkResponse({
+    description: '계산 로직에 따라 사용자들의 점수를 갱신한 후, 성공 응답 반환',
+  })
+  async calculatePoints(@Body() req: CalculatePointsReq): Promise<BaseRes> {
+    return this.appService.calculatePoints(req);
   }
+  // @Post('/update')
+  // async updateMetaData() {
+  //   return this.appService.updateMetaData();
+  // }
 }
