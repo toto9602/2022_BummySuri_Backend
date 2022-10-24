@@ -12,12 +12,15 @@ import {
   GameGuessDto,
   GameGuessReq,
   GetBettingsCountRes,
+  GetMyMetadataReq,
+  GetMyMetadataRes,
   GetMyPointsDto,
   GetMyPointsReq,
   GetMyPointsRes,
   MintCountRes,
   MintDto,
   MintReq,
+  MintRes,
   saveBettedItemDto,
   saveBettedItemReq,
 } from './app.dtos';
@@ -98,6 +101,15 @@ export class AppController {
     const reqDto = Object.assign(new GetMyPointsDto(), req);
     return this.appService.getMyPoints(reqDto);
   }
+
+  // @Post('/myMeta')
+  // @HttpCode(HttpStatus.OK)
+  // @ApiOperation({summary:"나의 NFT 메타데이터"})
+  // @ApiOkResponse({
+  //   description:"minting 한 사용자가 받은 NFT 메타데이터를 반환",
+  //   type:
+  // })
+  // async getMyMetadata(@Body() req:GetMyMetadataReq):Promise<GetMyMetadataRes> {}
 
   @Post('/update')
   async updateMetaData() {

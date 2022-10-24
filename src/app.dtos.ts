@@ -170,6 +170,7 @@ export class YonseiMintCountRes extends BaseRes {
 export class GetNextNFTMetaDataRes extends BaseRes {
   character: string;
   metadata: MetaData;
+  metadataNum: string;
 }
 
 export class GameGuess {
@@ -334,4 +335,18 @@ export class GetMyPointsRes extends BaseRes {
     description: '사용자의 현재 points',
   })
   points: number;
+}
+
+export class GetMyMetadataReq {
+  @ApiProperty({
+    type: String,
+    required: true,
+    description: '사용자의 주소',
+  })
+  @IsAddress()
+  userAddr: string;
+}
+
+export class GetMyMetadataRes extends BaseRes {
+  metadata: MetaData;
 }

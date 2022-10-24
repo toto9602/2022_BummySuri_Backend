@@ -39,6 +39,9 @@ export class User {
   @Column({ default: 500 }) // 기본 점수 500
   points: number;
 
+  @Column()
+  myMetadataNum: string;
+
   @OneToOne(() => GameGuess, (gameGuess) => gameGuess.user)
   gameGuess: GameGuess;
 

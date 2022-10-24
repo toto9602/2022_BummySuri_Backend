@@ -69,12 +69,16 @@ export class AppService {
         from: this.config.get('DEPLOYER_ACCOUNT'),
         gas: 250000,
       });
-
+      console.log(receipt.status);
       if (receipt.status === true) {
         await this.usersService.markAsSucceeded(user.userAddr);
         const nftData = await this.getNextNFTMetaData(univType);
 
-        if (nftData.resultCode == '0') {
+        user.myMetadataNum = nftData.metadataNum;
+
+        const userSaved = await this.usersService.saveUser(user);
+
+        if (nftData.resultCode == '0' && userSaved) {
           return {
             resultCode: '0',
             message: 'success',
@@ -177,6 +181,7 @@ export class AppService {
     univ: University,
   ): Promise<GetNextNFTMetaDataRes> {
     try {
+      console.log('entered');
       let url: string;
       let nextNum: string;
       let character: string;
@@ -193,12 +198,13 @@ export class AppService {
         nextNum = (await this.getYonseiMintCount()).yonseiMints.toString();
       }
       const requestUrl = url + nextNum + '.json';
+      console.log(requestUrl);
       const metadata = (await lastValueFrom(this.http.get(requestUrl))).data;
-
       if (metadata) {
         return {
           resultCode: '0',
           message: 'success',
+          metadataNum: nextNum,
           character: character,
           metadata: metadata,
         };
