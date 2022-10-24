@@ -35,7 +35,7 @@ export class AppController {
     description: '컨트랙 함수 호출하여 minting 후 성공했음을 알리는 응답 반환 ',
     type: BaseRes,
   })
-  async singleMint(@Body() req: MintReq): Promise<BaseRes> {
+  async singleMint(@Body() req: MintReq): Promise<MintRes> {
     const reqDto = Object.assign(new MintDto(), req);
     return this.appService.singleMint(reqDto);
   }

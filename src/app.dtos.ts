@@ -1,6 +1,7 @@
 import { IsBoolean, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsAddress } from './dtos.validation';
+import { MetadataAlreadyExistsError } from 'typeorm';
 
 export class MintReq {
   @ApiProperty({
@@ -68,9 +69,78 @@ export class BaseRes {
   message: string;
 }
 
+export class Attribute {
+  @ApiProperty({
+    type: String,
+    required: true,
+  })
+  trait_type: string;
+
+  @ApiProperty({
+    type: String,
+    required: true,
+  })
+  value: string;
+}
+
+export class MetaData {
+  @ApiProperty({
+    type: String,
+    required: true,
+  })
+  name: string;
+  @ApiProperty({
+    type: String,
+    required: true,
+  })
+  description: string;
+  @ApiProperty({
+    type: String,
+    required: true,
+  })
+  image: string;
+  @ApiProperty({
+    type: String,
+    required: true,
+  })
+  background_color: string;
+  @ApiProperty({
+    type: Boolean,
+    required: true,
+  })
+  sendable: boolean;
+  @ApiProperty({
+    type: Boolean,
+    required: true,
+  })
+  send_friendly_only: boolean;
+  @ApiProperty({
+    type: [Attribute],
+    required: true,
+  })
+  attributes: Attribute[];
+}
+
 export class MintRes extends BaseRes {
+  @ApiProperty({
+    type: String,
+    required: true,
+    description: '버미 || 수리',
+  })
   character: string;
+
+  @ApiProperty({
+    type: MetaData,
+    required: true,
+    description: 'NFT 메타데이터',
+  })
   metadata: MetaData;
+
+  @ApiProperty({
+    type: String,
+    required: true,
+    description: '사용자의 이름',
+  })
   username: string;
 }
 export class MintCountRes extends BaseRes {
@@ -97,20 +167,6 @@ export class YonseiMintCountRes extends BaseRes {
   yonseiMints: number;
 }
 
-export interface Attribute {
-  trait_type: string;
-  value: string;
-}
-
-export interface MetaData {
-  name: string;
-  description: string;
-  image: string;
-  background_color: string;
-  sendable: boolean;
-  send_friendly_only: boolean;
-  attributes: Attribute[];
-}
 export class GetNextNFTMetaDataRes extends BaseRes {
   character: string;
   metadata: MetaData;
@@ -272,5 +328,10 @@ export class GetMyPointsDto {
 }
 
 export class GetMyPointsRes extends BaseRes {
+  @ApiProperty({
+    type: Number,
+    required: true,
+    description: '사용자의 현재 points',
+  })
   points: number;
 }
