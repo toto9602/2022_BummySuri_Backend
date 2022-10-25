@@ -172,14 +172,35 @@ export class AppService {
   async isMinted(req: IsMintedDto): Promise<IsMintedRes> {
     const user = await this.usersService.getUserByAddr(req.userAddr);
 
-    const isMinted = user.isSuccess;
+    if (user) {
+      const isMinted = user.isSuccess;
 
-    this.logger.log(`User addr ${user.userAddr} isMinted ${isMinted} Fetched`);
+      if (isMinted) {
+        const myMetadata = (
+          await this.getMyMetadata({ userAddr: req.userAddr })
+        ).metadata;
+
+        this.logger.log(
+          `User with addr ${req.userAddr}, minted status Fetched`,
+        );
+
+        return {
+          resultCode: '0',
+          message: 'success',
+          isMinted: isMinted,
+          userAddr: req.userAddr,
+          metadata: myMetadata,
+        };
+      }
+    }
+
+    this.logger.log(`User with addr ${req.userAddr} not minted Fetched`);
 
     return {
       resultCode: '0',
       message: 'success',
-      isMinted: isMinted,
+      isMinted: false,
+      userAddr: req.userAddr,
     };
   }
 
