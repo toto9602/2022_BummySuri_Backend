@@ -166,6 +166,16 @@ export class AppService {
       metadata: metadata,
     };
   }
+
+  async redirectIfUser(userAddr: string) {
+    const user = this.usersService.getUserByAddr(userAddr);
+
+    if (user) {
+      return { url: 'https://bummy-suri.com/myNFT' };
+    }
+    return { url: null };
+  }
+
   private async getKoreaMintCount(): Promise<KoreaMintCountRes> {
     try {
       const koreaContract = this.contractFactory.get('KOREA');

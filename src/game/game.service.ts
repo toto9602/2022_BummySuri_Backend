@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -24,6 +28,9 @@ export class GameServiceImpl implements GameService {
     try {
       const user = await this.usersService.getUserByAddr(req.userAddr);
 
+      if (!user) {
+        throw new BadRequestException('User not found');
+      }
       const newGameGuess = this.gameRepository.create({
         baseballWin: req.baseball.univWin,
         baseballGap: req.baseball.scoreGap,
