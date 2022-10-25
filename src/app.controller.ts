@@ -129,7 +129,7 @@ export class AppController {
     return this.appService.calculatePoints(req);
   }
 
-  @Get('/re')
+  @Post('/redirect')
   @HttpCode(HttpStatus.MOVED_PERMANENTLY)
   @Redirect('https://bummy-suri.com/myNFT')
   async redirectIfUser(userAddr: string) {
