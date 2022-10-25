@@ -42,7 +42,7 @@ export class AppController {
   @ApiOperation({ summary: '사용자 주소로 minting' })
   @ApiOkResponse({
     description: '컨트랙 함수 호출하여 minting 후 성공했음을 알리는 응답 반환 ',
-    type: BaseRes,
+    type: MintRes,
   })
   async singleMint(@Body() req: MintReq): Promise<MintRes> {
     const reqDto = Object.assign(new MintDto(), req);
@@ -127,6 +127,7 @@ export class AppController {
   @ApiOperation({ summary: '경기 예측 결과에 따라 사용자들의 점수를 업데이트' })
   @ApiOkResponse({
     description: '계산 로직에 따라 사용자들의 점수를 갱신한 후, 성공 응답 반환',
+    type: BaseRes,
   })
   async calculatePoints(@Body() req: CalculatePointsReq): Promise<BaseRes> {
     return this.appService.calculatePoints(req);
@@ -139,6 +140,7 @@ export class AppController {
   })
   @ApiOkResponse({
     description: '사용자의 minting 여부를 반환 (for Redirection)',
+    type: IsMintedRes,
   })
   async isMinted(@Body() req: IsMintedReq): Promise<IsMintedRes> {
     const reqDto = Object.assign(new IsMintedDto(), req);

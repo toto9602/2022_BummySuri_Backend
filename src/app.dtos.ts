@@ -397,6 +397,18 @@ export class IsMintedRes extends BaseRes {
   userAddr: string;
 
   @ApiProperty({
+    type: String,
+    description: '버미 || 수리',
+  })
+  character?: string;
+
+  @ApiProperty({
+    type: String,
+    description: '사용자의 이름',
+  })
+  username?: string;
+
+  @ApiProperty({
     type: MetaData,
     description: 'minting을 받은 경우, 사용자의 metadata',
   })

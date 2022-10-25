@@ -189,6 +189,8 @@ export class AppService {
           message: 'success',
           isMinted: isMinted,
           userAddr: req.userAddr,
+          username: user.name,
+          character: user.univ === false ? '버미' : '수리',
           metadata: myMetadata,
         };
       }

@@ -28,25 +28,25 @@ export class GameServiceImpl implements GameService {
     try {
       const user = await this.usersService.getUserByAddr(req.userAddr);
 
-      if (!user) {
-        throw new BadRequestException('User not found');
-      }
-      const newGameGuess = this.gameRepository.create({
-        baseballWin: req.baseball.univWin,
-        baseballGap: req.baseball.scoreGap,
-        iceHockeyWin: req.iceHockey.univWin,
-        iceHockeyGap: req.iceHockey.scoreGap,
-        basketballWin: req.basketball.univWin,
-        basketballGap: req.basketball.scoreGap,
-        rugbyWin: req.rugby.univWin,
-        rugbyGap: req.rugby.scoreGap,
-        soccerWin: req.soccer.univWin,
-        soccerGap: req.soccer.scoreGap,
-        user: user,
-      });
+      if (user) {
+        const newGameGuess = this.gameRepository.create({
+          baseballWin: req.baseball.univWin,
+          baseballGap: req.baseball.scoreGap,
+          iceHockeyWin: req.iceHockey.univWin,
+          iceHockeyGap: req.iceHockey.scoreGap,
+          basketballWin: req.basketball.univWin,
+          basketballGap: req.basketball.scoreGap,
+          rugbyWin: req.rugby.univWin,
+          rugbyGap: req.rugby.scoreGap,
+          soccerWin: req.soccer.univWin,
+          soccerGap: req.soccer.scoreGap,
+          user: user,
+        });
 
-      await this.gameRepository.save(newGameGuess);
-      return newGameGuess;
+        await this.gameRepository.save(newGameGuess);
+        return newGameGuess;
+      }
+      throw new BadRequestException('User not Found');
     } catch (err: any) {
       const msg = err.message || '';
       throw new InternalServerErrorException(msg);
