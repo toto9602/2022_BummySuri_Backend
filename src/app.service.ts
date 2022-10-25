@@ -173,6 +173,9 @@ export class AppService {
     const user = await this.usersService.getUserByAddr(req.userAddr);
 
     const isMinted = user.isSuccess;
+
+    this.logger.log(`User addr ${user.userAddr} isMinted ${isMinted} Fetched`);
+
     return {
       resultCode: '0',
       message: 'success',
