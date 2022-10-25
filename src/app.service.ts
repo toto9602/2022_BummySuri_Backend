@@ -25,6 +25,8 @@ import {
   GetMyMetadataRes,
   MetaData,
   CalculatePointsReq,
+  IsMintedDto,
+  IsMintedRes,
 } from './app.dtos';
 import { ContractFactory, University } from './common/caver/caver.factory';
 import { UsersServiceImpl } from './users/users.service';
@@ -167,13 +169,15 @@ export class AppService {
     };
   }
 
-  async redirectIfUser(userAddr: string) {
-    const user = this.usersService.getUserByAddr(userAddr);
+  async isMinted(req: IsMintedDto): Promise<IsMintedRes> {
+    const user = await this.usersService.getUserByAddr(req.userAddr);
 
-    if (user) {
-      return { url: 'https://bummy-suri.com/myNFT' };
-    }
-    return { url: 'https://bummy-suri.com/whoyou' };
+    const isMinted = user.isSuccess;
+    return {
+      resultCode: '0',
+      message: 'success',
+      isMinted: isMinted,
+    };
   }
 
   private async getKoreaMintCount(): Promise<KoreaMintCountRes> {

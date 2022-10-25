@@ -370,3 +370,23 @@ export class CalculatePointsReq {
   })
   day: string;
 }
+
+export class IsMintedReq {
+  @ApiProperty({
+    type: String,
+    description: '사용자의 주소',
+  })
+  userAddr: string;
+}
+
+export class IsMintedDto {
+  userAddr: string;
+}
+
+export class IsMintedRes extends BaseRes {
+  @ApiProperty({
+    type: Boolean,
+    description: 'minting을 이미 하였는지 여부',
+  })
+  isMinted: boolean;
+}

@@ -20,6 +20,9 @@ import {
   GetMyPointsDto,
   GetMyPointsReq,
   GetMyPointsRes,
+  IsMintedDto,
+  IsMintedReq,
+  IsMintedRes,
   MintCountRes,
   MintDto,
   MintReq,
@@ -129,11 +132,17 @@ export class AppController {
     return this.appService.calculatePoints(req);
   }
 
-  @Post('/redirect')
-  @HttpCode(HttpStatus.MOVED_PERMANENTLY)
-  @Redirect('https://bummy-suri.com/myNFT')
-  async redirectIfUser(userAddr: string) {
-    this.appService.redirectIfUser(userAddr);
+  @Post('/isMinted')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '해당 주소의 사용자가 이미 minting 하였는지 여부를 반환',
+  })
+  @ApiOkResponse({
+    description: '사용자의 minting 여부를 반환 (for Redirection)',
+  })
+  async isMinted(@Body() req: IsMintedReq): Promise<IsMintedRes> {
+    const reqDto = Object.assign(new IsMintedDto(), req);
+    return this.appService.isMinted(reqDto);
   }
 
   // @Post('/update')
