@@ -173,7 +173,7 @@ export class AppService {
     if (user) {
       return { url: 'https://bummy-suri.com/myNFT' };
     }
-    return { url: null };
+    return { url: 'https://bummy-suri.com/whoyou' };
   }
 
   private async getKoreaMintCount(): Promise<KoreaMintCountRes> {
