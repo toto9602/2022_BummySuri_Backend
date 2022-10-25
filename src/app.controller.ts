@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Redirect,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 import {
@@ -127,6 +128,14 @@ export class AppController {
   async calculatePoints(@Body() req: CalculatePointsReq): Promise<BaseRes> {
     return this.appService.calculatePoints(req);
   }
+
+  @Get('/re')
+  @HttpCode(HttpStatus.MOVED_PERMANENTLY)
+  @Redirect('https://bummy-suri.com/myNFT')
+  async redirectIfUser(userAddr: string) {
+    this.appService.redirectIfUser(userAddr);
+  }
+
   // @Post('/update')
   // async updateMetaData() {
   //   return this.appService.updateMetaData();
