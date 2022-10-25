@@ -58,10 +58,15 @@ export class UsersServiceImpl implements UsersService {
   }
 
   async getUserByAddr(userAddr: string): Promise<User> {
-    const user = await this.usersRepository.findOneBy({ userAddr });
-    if (!user) return null;
+    if (userAddr === '' || userAddr === null || userAddr === undefined) {
+      throw new InternalServerErrorException('zero address not allowed');
+    }
 
-    return user;
+    const user = await this.usersRepository.findOneBy({ userAddr });
+
+    if (user) return user;
+
+    throw new InternalServerErrorException('User not found');
   }
 
   async saveUser(user: User): Promise<User> {
