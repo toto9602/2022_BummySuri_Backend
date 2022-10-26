@@ -15,11 +15,11 @@ export class ContractFactory {
 
     const koreaContract = caver.contract.create(
       abi,
-      process.env.KU_BAOBAB_ADDR,
+      process.env.KU_CYPRESS_ADDR,
     );
     const yonseiContract = caver.contract.create(
       abi,
-      process.env.YU_BAOBAB_ADDR,
+      process.env.YU_CYPRESS_ADDR,
     );
     this.koreaContract = koreaContract;
     this.yonseiContract = yonseiContract;
