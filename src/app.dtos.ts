@@ -142,6 +142,13 @@ export class MintRes extends BaseRes {
     description: '사용자의 이름',
   })
   username: string;
+
+  @ApiProperty({
+    type: String,
+    required: true,
+    description: '사용자의 지갑 주소',
+  })
+  userAddr: string;
 }
 export class MintCountRes extends BaseRes {
   @ApiProperty({

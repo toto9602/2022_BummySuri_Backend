@@ -94,6 +94,7 @@ export class AppService {
             resultCode: '0',
             message: 'success',
             username: user.name,
+            userAddr: req.userAddr,
             character: nftData.character,
             metadata: nftData.metadata,
           };
