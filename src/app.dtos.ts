@@ -282,12 +282,11 @@ export class saveBettedItemDto {
 
 export class SaveBettedItemRes extends BaseRes {
   @ApiProperty({
-    type:Number,
-    required:true,
-    description:"응모 후 사용자에게 남은 포인트"
+    type: Number,
+    required: true,
+    description: '응모 후 사용자에게 남은 포인트',
   })
-  pointsLeft:number;
-
+  pointsLeft: number;
 }
 export class Bettings {
   @ApiProperty({

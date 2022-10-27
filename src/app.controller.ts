@@ -79,7 +79,7 @@ export class AppController {
   @ApiOkResponse({
     description:
       '사용자의 응모 정보를 DB에 저장 후 성공했음을 알리는 응답 반환(itemCode = "1" || "2" || "3" || "4" || "5")',
-    type: BaseRes,
+    type: SaveBettedItemRes,
   })
   async saveBettedItemInfo(
     @Body() req: saveBettedItemReq,

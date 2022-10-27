@@ -37,17 +37,28 @@ export class ItemServiceImpl implements ItemService {
         itemCode: req.itemCode,
       });
 
+      const alreadyBetted = await this.bettedRepository.findOneBy({
+        item: bettedItem,
+        user: user,
+      });
+
+      if (alreadyBetted) {
+        this.logger.warn(`Already Betted to Item ${req.itemCode}`);
+        throw new BadRequestException('already betted');
+      }
+
+      if (user.points < bettedItem.pointsNeeded) {
+        this.logger.warn('Betting Failed because of insufficient Points');
+
+        throw new BadRequestException('Not Enough Points');
+      }
+
       if (bettedItem) {
         const bettingResult = this.bettedRepository.create({
           user: user,
           item: bettedItem,
         });
 
-        if (user.points < bettedItem.pointsNeeded) {
-          this.logger.warn('Betting Failed because of insufficient Points');
-
-          throw new BadRequestException('Not Enough Points');
-        }
         user.points = user.points - bettedItem.pointsNeeded;
 
         const bettedUser = await this.usersService.saveUser(user);
