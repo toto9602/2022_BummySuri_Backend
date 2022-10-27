@@ -280,6 +280,15 @@ export class saveBettedItemDto {
   itemCode: string;
 }
 
+export class SaveBettedItemRes extends BaseRes {
+  @ApiProperty({
+    type:Number,
+    required:true,
+    description:"응모 후 사용자에게 남은 포인트"
+  })
+  pointsLeft:number;
+
+}
 export class Bettings {
   @ApiProperty({
     type: Number,
@@ -318,15 +327,19 @@ export class Bettings {
 }
 export class GetBettingsCountRes extends BaseRes {
   @ApiProperty({
-    type: Bettings,
+    type: Number,
     required: true,
-    description: '아이템별 응모 수량',
+    description: '모든 아이템 응모 수량의 총합',
   })
-  @ValidateNested()
-  bettings: Bettings;
+  bettings: number;
 }
 
 export class GetMyPointsReq {
+  @ApiProperty({
+    type: String,
+    required: true,
+    description: '사용자의 주소',
+  })
   @IsAddress()
   userAddr: string;
 }

@@ -27,6 +27,7 @@ import {
   CalculatePointsReq,
   IsMintedDto,
   IsMintedRes,
+  SaveBettedItemRes,
 } from './app.dtos';
 import { ContractFactory, University } from './common/caver/caver.factory';
 import { UsersServiceImpl } from './users/users.service';
@@ -315,12 +316,14 @@ export class AppService {
     }
   }
 
-  async saveBettedItemInfo(req: saveBettedItemDto): Promise<BaseRes> {
-    const savedBettedUser = await this.itemService.saveBettedItemInfo(req);
+  async saveBettedItemInfo(req: saveBettedItemDto): Promise<SaveBettedItemRes> {
+    const pointsLeft = await this.itemService.saveBettedItemInfo(req);
 
-    if (savedBettedUser) {
-      this.logger.log('User betted to Item');
-      return { resultCode: '0', message: 'success' };
+    if (pointsLeft >= 0) {
+      this.logger.log(
+        `User ${req.userAddr} betted to Item : ${pointsLeft} left`,
+      );
+      return { resultCode: '0', message: 'success', pointsLeft: pointsLeft };
     }
 
     this.logger.error('Saving betted item failed');

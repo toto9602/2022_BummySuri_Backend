@@ -29,6 +29,7 @@ import {
   MintRes,
   saveBettedItemDto,
   saveBettedItemReq,
+  SaveBettedItemRes,
 } from './app.dtos';
 import { AppService } from './app.service';
 
@@ -77,10 +78,12 @@ export class AppController {
   @ApiOperation({ summary: '아이템 응모하기' })
   @ApiOkResponse({
     description:
-      '사용자의 응모 정보를 DB에 저장 후 성공했음을 알리는 응답 반환',
+      '사용자의 응모 정보를 DB에 저장 후 성공했음을 알리는 응답 반환(itemCode = "1" || "2" || "3" || "4" || "5")',
     type: BaseRes,
   })
-  async saveBettedItemInfo(@Body() req: saveBettedItemReq): Promise<BaseRes> {
+  async saveBettedItemInfo(
+    @Body() req: saveBettedItemReq,
+  ): Promise<SaveBettedItemRes> {
     const reqDto = Object.assign(new saveBettedItemDto(), req);
     return this.appService.saveBettedItemInfo(reqDto);
   }
@@ -89,7 +92,7 @@ export class AppController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '아이템별 응모 수량' })
   @ApiOkResponse({
-    description: '아이템별로 응모한 사용자 수를 반환',
+    description: '총 아이템 응모자 수를 반환',
     type: GetBettingsCountRes,
   })
   async getBettingsCount(): Promise<GetBettingsCountRes> {

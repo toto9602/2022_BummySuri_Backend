@@ -14,8 +14,8 @@ import { Betted } from '../user_item/betted.entity';
 import { Item } from './item.entity';
 
 interface ItemService {
-  saveBettedItemInfo(req: saveBettedItemDto): Promise<Betted>;
-  getBettingsCount(): Promise<Bettings>;
+  saveBettedItemInfo(req: saveBettedItemDto): Promise<number>;
+  getBettingsCount(): Promise<number>;
 }
 
 @Injectable()
@@ -29,7 +29,7 @@ export class ItemServiceImpl implements ItemService {
     private bettedRepository: Repository<Betted>,
   ) {}
 
-  async saveBettedItemInfo(req: saveBettedItemDto): Promise<Betted> {
+  async saveBettedItemInfo(req: saveBettedItemDto): Promise<number> {
     try {
       const user = await this.usersService.getUserByAddr(req.userAddr);
 
@@ -53,7 +53,7 @@ export class ItemServiceImpl implements ItemService {
         const bettedUser = await this.usersService.saveUser(user);
 
         const result = await this.bettedRepository.save(bettingResult);
-        return result;
+        return user.points;
       }
     } catch (err: any) {
       const msg = err.message || '';
@@ -63,7 +63,7 @@ export class ItemServiceImpl implements ItemService {
     }
   }
 
-  async getBettingsCount(): Promise<Bettings> {
+  async getBettingsCount(): Promise<number> {
     const firstItem = await this.getItem('1');
     const firstBetters = await this.bettedRepository.find({
       where: { item: firstItem },
@@ -89,13 +89,23 @@ export class ItemServiceImpl implements ItemService {
       where: { item: fifthItem },
     });
 
-    return {
-      '1': firstBetters ? firstBetters.length : 0,
-      '2': secondBetters ? secondBetters.length : 0,
-      '3': thirdBetters ? thirdBetters.length : 0,
-      '4': fourthBetters ? fourthBetters.length : 0,
-      '5': fifthBetters ? fifthBetters.length : 0,
-    };
+    const firstBettersCount = firstBetters ? firstBetters.length : 0;
+    const secondBettersCount = secondBetters ? secondBetters.length : 0;
+    const thirdBettersCount = thirdBetters ? thirdBetters.length : 0;
+    const fourthBettersCount = fourthBetters ? fourthBetters.length : 0;
+    const fifthBettersCount = fifthBetters ? fifthBetters.length : 0;
+    this.logger.log(
+      `first : ${firstBettersCount}, second : ${secondBettersCount}, third : ${thirdBettersCount}, fourth : ${fourthBettersCount}, firth : ${fifthBettersCount}`,
+    );
+
+    const totalBettersCount =
+      firstBettersCount +
+      secondBettersCount +
+      thirdBettersCount +
+      fourthBettersCount +
+      fifthBettersCount;
+
+    return totalBettersCount;
   }
 
   private async getItem(itemCode: string): Promise<Item> {
