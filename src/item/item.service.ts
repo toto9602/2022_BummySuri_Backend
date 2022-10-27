@@ -64,6 +64,9 @@ export class ItemServiceImpl implements ItemService {
         const bettedUser = await this.usersService.saveUser(user);
 
         const result = await this.bettedRepository.save(bettingResult);
+        this.logger.log(
+          `User ${req.userAddr} betted to item ${req.itemCode} : ${user.points} left`,
+        );
         return user.points;
       }
     } catch (err: any) {

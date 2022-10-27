@@ -320,9 +320,6 @@ export class AppService {
     const pointsLeft = await this.itemService.saveBettedItemInfo(req);
 
     if (pointsLeft >= 0) {
-      this.logger.log(
-        `User ${req.userAddr} betted to Item : ${pointsLeft} left`,
-      );
       return { resultCode: '0', message: 'success', pointsLeft: pointsLeft };
     }
 
