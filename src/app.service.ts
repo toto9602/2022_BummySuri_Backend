@@ -343,11 +343,13 @@ export class AppService {
     if (univ === true) return 'YONSEI';
   }
 
-  async calculatePoints(req: CalculatePointsReq): Promise<BaseRes> {
+  async calculateFirstDayPoints(req: CalculatePointsReq): Promise<BaseRes> {
     const allUsers = await this.usersService.findAll();
 
     const users = allUsers.map(async (user) => {
-      const pointsToBeSet = await this.gameService.calcPoints(user, req.day);
+      const pointsToBeSet = await this.gameService.calculateFirstDayPoints(
+        user,
+      );
 
       user.points = pointsToBeSet;
 
@@ -361,6 +363,25 @@ export class AppService {
         message: 'success',
         resultCode: '0',
       };
+  }
+
+  async calculateSecondDayPoints(req: CalculatePointsReq): Promise<BaseRes> {
+    const allUsers = await this.usersService.findAll();
+
+    const users = allUsers.map(async (user) => {
+      const pointsToBeSet = await this.gameService.calculateSecondDayPoints(
+        user,
+      );
+
+      user.points = pointsToBeSet;
+
+      const userWithPointsSaved = await this.usersService.saveUser(user);
+      return userWithPointsSaved;
+    });
+
+    const usersSet = await Promise.all(users);
+
+    if (usersSet) return { message: 'success', resultCode: '0' };
   }
   // // TODO : loop 추가하기
   // async updateMetaData(): Promise<void> {
