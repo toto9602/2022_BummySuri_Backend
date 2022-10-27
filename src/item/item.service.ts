@@ -1,13 +1,13 @@
 import {
-  Injectable,
   BadRequestException,
+  HttpException,
+  Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
-import { ApiBadRequestResponse } from '@nestjs/swagger';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BaseRes, Bettings, MintDto, saveBettedItemDto } from '../app.dtos';
-import { User } from '../users/user.entity';
+import { Bettings, saveBettedItemDto } from '../app.dtos';
 import { UsersServiceImpl } from '../users/users.service';
 import { Betted } from '../user_item/betted.entity';
 
@@ -20,6 +20,7 @@ interface ItemService {
 
 @Injectable()
 export class ItemServiceImpl implements ItemService {
+  private readonly logger = new Logger();
   constructor(
     @InjectRepository(Item)
     private itemRepository: Repository<Item>,
@@ -41,6 +42,12 @@ export class ItemServiceImpl implements ItemService {
           user: user,
           item: bettedItem,
         });
+
+        if (user.points < bettedItem.pointsNeeded) {
+          this.logger.warn('Betting Failed because of insufficient Points');
+
+          throw new BadRequestException('Not Enough Points');
+        }
         user.points = user.points - bettedItem.pointsNeeded;
 
         const bettedUser = await this.usersService.saveUser(user);
@@ -50,6 +57,8 @@ export class ItemServiceImpl implements ItemService {
       }
     } catch (err: any) {
       const msg = err.message || '';
+      if (err instanceof HttpException) throw err;
+
       throw new InternalServerErrorException(msg);
     }
   }
