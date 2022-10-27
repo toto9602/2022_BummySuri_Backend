@@ -98,9 +98,6 @@ export class ItemServiceImpl implements ItemService {
     const thirdBettersCount = thirdBetters ? thirdBetters.length : 0;
     const fourthBettersCount = fourthBetters ? fourthBetters.length : 0;
     const fifthBettersCount = fifthBetters ? fifthBetters.length : 0;
-    this.logger.log(
-      `first : ${firstBettersCount}, second : ${secondBettersCount}, third : ${thirdBettersCount}, fourth : ${fourthBettersCount}, firth : ${fifthBettersCount}`,
-    );
 
     const totalBettersCount =
       firstBettersCount +
@@ -108,6 +105,10 @@ export class ItemServiceImpl implements ItemService {
       thirdBettersCount +
       fourthBettersCount +
       fifthBettersCount;
+
+    this.logger.log(
+      `first : ${firstBettersCount}, second : ${secondBettersCount}, third : ${thirdBettersCount}, fourth : ${fourthBettersCount}, firth : ${fifthBettersCount}, total : ${totalBettersCount}`,
+    );
 
     return totalBettersCount;
   }
