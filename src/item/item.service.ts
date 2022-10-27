@@ -37,16 +37,6 @@ export class ItemServiceImpl implements ItemService {
         itemCode: req.itemCode,
       });
 
-      const alreadyBetted = await this.bettedRepository.findOneBy({
-        item: bettedItem,
-        user: user,
-      });
-
-      if (alreadyBetted) {
-        this.logger.warn(`Already Betted to Item ${req.itemCode}`);
-        throw new BadRequestException('already betted');
-      }
-
       if (user.points < bettedItem.pointsNeeded) {
         this.logger.warn('Betting Failed because of insufficient Points');
 
