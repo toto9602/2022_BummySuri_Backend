@@ -122,15 +122,34 @@ export class AppController {
     return this.appService.getMyMetadata(reqDto);
   }
 
-  @Post('scores/calc')
+  @Post('/scores/first')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: '경기 예측 결과에 따라 사용자들의 점수를 업데이트' })
+  @ApiOperation({
+    summary: '1일차 경기 예측 결과에 따라 사용자들의 점수를 업데이트',
+  })
   @ApiOkResponse({
     description: '계산 로직에 따라 사용자들의 점수를 갱신한 후, 성공 응답 반환',
     type: BaseRes,
   })
-  async calculatePoints(@Body() req: CalculatePointsReq): Promise<BaseRes> {
-    return this.appService.calculatePoints(req);
+  async calculateFirstDayPoints(
+    @Body() req: CalculatePointsReq,
+  ): Promise<BaseRes> {
+    return this.appService.calculateFirstDayPoints(req);
+  }
+
+  @Post('/scores/second')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '2일차 경기 예측 결과에 따라 사용자들의 점수를 업데이트',
+  })
+  @ApiOkResponse({
+    description: '계산 로직에 따라 사용자들의 점수를 갱신한 후, 성공 응답 반환',
+    type: BaseRes,
+  })
+  async calculateSecondDayPoints(
+    @Body() req: CalculatePointsReq,
+  ): Promise<BaseRes> {
+    return this.appService.calculateSecondDayPoints(req);
   }
 
   @Post('/isMinted')
