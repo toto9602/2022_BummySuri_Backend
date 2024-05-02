@@ -8,5 +8,3 @@
 
 ## Package Manager
 > npm
-
-## Running(Local)
